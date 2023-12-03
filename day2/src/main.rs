@@ -1,3 +1,4 @@
+use std::cmp;
 use std::collections::HashSet;
 use std::fs;
 use std::str::FromStr;
@@ -23,40 +24,44 @@ impl FromStr for Subset {
         let mut g: i32 = 0;
         let mut b: i32 = 0;
         let mut r: i32 = 0;
-       
-        while i > 0 { 
-            if subset_chars[i as usize] == ' ' || subset_chars[i as usize] == ','  { 
+
+        while i > 0 {
+            if subset_chars[i as usize] == ' ' || subset_chars[i as usize] == ',' {
                 i -= 1;
                 continue;
-            } 
+            }
 
-            current_substr.push(subset_chars[i as usize]); 
+            current_substr.push(subset_chars[i as usize]);
             if colors.contains(&current_substr.as_str().chars().rev().collect::<String>()) {
                 let mut next_idx = i - 2;
                 let mut number_reverse = String::new();
-                while next_idx >= 0 && subset_chars[next_idx as usize].is_numeric() { 
+                while next_idx >= 0 && subset_chars[next_idx as usize].is_numeric() {
                     number_reverse.push(subset_chars[next_idx as usize]);
                     next_idx -= 1;
                 }
-                
-                let number_as_string : String = number_reverse.as_str().chars().rev().collect();
-                let correct_token =  &current_substr.as_str().chars().rev().collect::<String>();
+
+                let number_as_string: String = number_reverse.as_str().chars().rev().collect();
+                let correct_token = &current_substr.as_str().chars().rev().collect::<String>();
 
                 if correct_token == "green" {
                     g = number_as_string.as_str().parse::<i32>().unwrap();
-               } else if correct_token == "red" {
-                    r =  number_as_string.as_str().parse::<i32>().unwrap();
-               } else if correct_token == "blue" {
-                   b = number_as_string.as_str().parse::<i32>().unwrap();
-               }
+                } else if correct_token == "red" {
+                    r = number_as_string.as_str().parse::<i32>().unwrap();
+                } else if correct_token == "blue" {
+                    b = number_as_string.as_str().parse::<i32>().unwrap();
+                }
 
-               i = next_idx;
-               current_substr = String::new();
-               continue;
+                i = next_idx;
+                current_substr = String::new();
+                continue;
             }
             i -= 1;
         }
-        Ok(Subset { blue: b, red: r, green: g})
+        Ok(Subset {
+            blue: b,
+            red: r,
+            green: g,
+        })
     }
 
     type Err = std::num::ParseIntError;
@@ -64,34 +69,29 @@ impl FromStr for Subset {
 
 fn main() {
     let contents = fs::read_to_string("./input.txt").expect("Shoud have a file called input.txt");
-    let content_lines = contents.split("\n"); 
-    let mut sum_games_id: i32 = 0;
+    let content_lines = contents.split("\n");
+    let mut sum_power_sets = 0;
     for line in content_lines {
         let line_split: Vec<&str> = line.split(':').collect();
-
-        let mut game_id_str: String = String::new();
-        for c in line_split[0].chars().rev() {
-            if c.is_numeric() {
-                game_id_str.push(c);
-                continue;
-            }
-            break;
-        }
-        let game_id_reversed: String = game_id_str.chars().rev().collect(); 
+        let mut max_r = 0;
+        let mut max_g = 0;
+        let mut max_b = 0;
 
         let subsets = line_split[1].split(";");
-
-        let mut valid_subset = true;
         for s in subsets {
             match Subset::from_str(s) {
-                Ok(subset) => { if subset.blue > 14 || subset.green > 13 || subset.red > 12 {  valid_subset = false; break; }}
-                Err(_) => { println!("{} is not a valid subset", s)}
+                Ok(subset) => {
+                    max_r = cmp::max(max_r, subset.red);
+                    max_g = cmp::max(max_g, subset.green);
+                    max_b = cmp::max(max_b, subset.blue);
+                }
+                Err(_) => {
+                    println!("{} is not a valid subset", s)
+                }
             }
         }
 
-        if valid_subset { 
-            sum_games_id += game_id_reversed.parse::<i32>().unwrap();
-        }
+        sum_power_sets += max_r * max_g * max_b;
     }
-    println!("{}", sum_games_id);
+    println!("{}", sum_power_sets);
 }
