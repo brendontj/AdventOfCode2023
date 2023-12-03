@@ -40,7 +40,8 @@ fn main() {
 
         match find_first_number(line_without_space, "dsc", &numbers) {
             Some(v) => {
-                right_number = v; 
+                right_number = v;
+       
             }
             _ => {
                 println!(
