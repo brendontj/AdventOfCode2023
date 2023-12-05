@@ -11,18 +11,29 @@ fn main() {
     println!("{}", columns_size);
 
     let mut symbols = hash_set::HashSet::new();
+    symbols.insert('$');
+    symbols.insert('/');
+    symbols.insert('+');
+    symbols.insert('#');
+    symbols.insert('%');
     symbols.insert('*');
+    symbols.insert('@');
+    symbols.insert('%');
+    symbols.insert('=');
+    symbols.insert('-');
+    symbols.insert('!');
+    symbols.insert('^');
+    symbols.insert('&'); 
+    
     let mut total_sum = 0;
     for r in 0..rows_size {
         // maybe rows_size -1
         for c in 0..columns_size {
             //maybe columns_size -1
             let character = lines[r].chars().nth(c).unwrap();
-            if symbols.contains(&character) { 
+            if symbols.contains(&character) {
                 let adjacent_numbers = find_adjacent_number(&lines, r, c, rows_size, columns_size);
-                if adjacent_numbers.len() == 2 {
-                    total_sum += adjacent_numbers[0 as usize] * adjacent_numbers[1 as usize];
-                } 
+                total_sum += adjacent_numbers.iter().map(|&x| x as i32).sum::<i32>();
             }
         }
     }
@@ -82,7 +93,7 @@ fn find_adjacent_number(
 
     match bottom_right_number.parse::<i32>() {
         Ok(n) => adjacent_numbers.push(n),
-        Err(_) => {} 
+        Err(_) => adjacent_numbers.push(0),
     }
 
     i = 0;
@@ -101,7 +112,7 @@ fn find_adjacent_number(
     }
     match middle_right_number.parse::<i32>() {
         Ok(n) => adjacent_numbers.push(n),
-        Err(_) => {} 
+        Err(_) => adjacent_numbers.push(0),
     }
 
     i = 0;
@@ -146,7 +157,7 @@ fn find_adjacent_number(
     }
     match top_right_number.parse::<i32>() {
         Ok(n) => adjacent_numbers.push(n),
-        Err(_) => {} 
+        Err(_) => adjacent_numbers.push(0),
     }
 
     //check top-center
@@ -191,7 +202,7 @@ fn find_adjacent_number(
         }
         match top_center_number.parse::<i32>() {
             Ok(n) => adjacent_numbers.push(n),
-            Err(_) => {}
+            Err(_) => adjacent_numbers.push(0),
         }
     }
 
@@ -229,7 +240,7 @@ fn find_adjacent_number(
         }
         match top_left_number.parse::<i32>() {
             Ok(n) => adjacent_numbers.push(n),
-            Err(_) => {} 
+            Err(_) => adjacent_numbers.push(0),
         }
     }
 
@@ -270,7 +281,7 @@ fn find_adjacent_number(
     }
     match middle_left_number.parse::<i32>() {
         Ok(n) => adjacent_numbers.push(n),
-        Err(_) => {} 
+        Err(_) => adjacent_numbers.push(0),
     }
 
     i = 0;
@@ -315,7 +326,7 @@ fn find_adjacent_number(
         }
         match bottom_center_number.parse::<i32>() {
             Ok(n) => adjacent_numbers.push(n),
-            Err(_) => {} 
+            Err(_) => adjacent_numbers.push(0),
         }
     }
 
@@ -358,7 +369,7 @@ fn find_adjacent_number(
         }
         match bottom_left_number.parse::<i32>() {
             Ok(n) => adjacent_numbers.push(n),
-            Err(_) => {} 
+            Err(_) => adjacent_numbers.push(0),
         }
     }
 
