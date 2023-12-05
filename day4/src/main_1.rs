@@ -1,12 +1,9 @@
-use std::{fs, collections::{HashSet, HashMap}};
+use std::{fs, collections::HashSet};
 
 fn main() {
     let contents = fs::read_to_string("./input.txt").expect("Should have a file called input.txt");
-    let lines : Vec<&str> = contents.split("\n").collect(); 
-    let mut hm :HashMap<i32, i32> = HashMap::new();
-    let mut idx = 1;
-    
-    let mut stack : Vec<i32> = vec![];
+    let lines : Vec<&str> = contents.split("\n").collect();
+    let mut count = 0;
     for l in lines {
         let line_data :Vec<&str>= l.split(":").collect();
         let line_info :Vec<&str> = line_data[1 as usize].split("|").collect();
@@ -14,25 +11,12 @@ fn main() {
         let winning_numbers = line_info[0 as usize];
         let cards = line_info[1 as usize];
  
-        hm.insert(idx,  qty_winning_numbers(cards, create_hash_set(winning_numbers))); 
-        stack.push(idx);
-        idx += 1;
+        let q = qty_winning_numbers(cards, create_hash_set(winning_numbers)); 
+        if q == 0 {continue;}
+        count += 2_i32.pow(q as u32-1);
     }
-    let mut count = stack.len();
-    while stack.len() > 0 {
-        let ce = stack.pop().unwrap();
-        let value = hm.get(&ce).unwrap();
-       
-        for i in 1..(value+1) {
-            stack.push(ce + i);
-            count += 1;
-        }
-    };
     println!("{}", count);
 }
-
-
-
 
 fn qty_winning_numbers(cards: &str, hs: HashSet<i32>) -> i32 {
     let mut count: i32 = 0;
@@ -68,4 +52,3 @@ fn create_hash_set(winning_numbers: &str) -> HashSet<i32> {
 
     return hs;
 }
-
